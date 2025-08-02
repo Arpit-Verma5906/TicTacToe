@@ -1,0 +1,44 @@
+# Ignore build artifacts
+/build/
+/bin/
+/obj/
+*.exe
+*.dll
+*.so
+*.dylib
+*.out
+*.app
+
+# Ignore temporary files
+*.log
+*.tmp
+*.swp
+*.bak
+
+# Ignore IDE/project files
+.vscode/
+.idea/
+*.sln
+*.vcxproj*
+*.user
+*.DS_Store
+
+# Ignore generated files
+*.o
+*.a
+*.lib
+*.gch
+*.pch
+
+# Ignore CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Ignore coverage and test reports
+*.gcno
+*.gcda
+*.gcov
+*.profraw
+*.profdata
