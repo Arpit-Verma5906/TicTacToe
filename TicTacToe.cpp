@@ -1,6 +1,15 @@
 #include <iostream>
 #include <cstdlib>
+#include <ctime>
 using namespace std;
+
+void clearScreen() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
 
 void drawBoard(char *spaces)
 {
@@ -39,13 +48,12 @@ void playerMove(char *spaces, char player)
             cout << "That spot is already occupied!\n";
         }
 
-    } while (!number > 0 || !number < 8);
+    } while (number < 0 || number > 8);
 }
 
 void computerMove(char *spaces, char computer)
 {
     int number;
-    srand(time(NULL));
 
     do
     {
@@ -60,7 +68,7 @@ void computerMove(char *spaces, char computer)
 
 bool checkWinner(char *spaces, char player, char computer)
 {
-    system("cls");
+    clearScreen();
     drawBoard(spaces);
     if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
     {
@@ -107,7 +115,7 @@ bool checkWinner(char *spaces, char player, char computer)
 
 bool checkTie(char *spaces)
 {
-    system("cls");
+    clearScreen();
     drawBoard(spaces);
 
     for (int i = 0; i < 9; i++)
@@ -124,6 +132,7 @@ bool checkTie(char *spaces)
 
 int main()
 {
+    srand(time(NULL));
 
     char spaces[9] = {
         ' ',
@@ -140,11 +149,9 @@ int main()
     char computer = 'O';
     bool running = true;
 
-    drawBoard(spaces);
-
     while (running)
     {
-        system("cls");
+        clearScreen();
         drawBoard(spaces);
 
         playerMove(spaces, player);
