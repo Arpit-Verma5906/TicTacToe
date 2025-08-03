@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 using namespace std;
 
 void drawBoard(char *spaces)
@@ -59,7 +60,8 @@ void computerMove(char *spaces, char computer)
 
 bool checkWinner(char *spaces, char player, char computer)
 {
-
+    system("cls");
+    drawBoard(spaces);
     if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
     {
         spaces[0] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
@@ -105,6 +107,8 @@ bool checkWinner(char *spaces, char player, char computer)
 
 bool checkTie(char *spaces)
 {
+    system("cls");
+    drawBoard(spaces);
 
     for (int i = 0; i < 9; i++)
     {
@@ -140,10 +144,12 @@ int main()
 
     while (running)
     {
-        playerMove(spaces, player);
+        system("cls");
         drawBoard(spaces);
+
+        playerMove(spaces, player);
         if (checkWinner(spaces, player, computer))
-        {
+        {            
             running = false;
             break;
         }
@@ -154,7 +160,6 @@ int main()
         }
 
         computerMove(spaces, computer);
-        drawBoard(spaces);
         if (checkWinner(spaces, player, computer))
         {
             running = false;
