@@ -43,8 +43,19 @@ void playerMove(char *spaces, char player)
     {
         cout << "Enter a spot to add a marker (1-9): ";
         cin >> number;
-        number--;
 
+        if(cin.fail()) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            number = -1;
+        }
+
+        if(number < 1 || number > 9) {
+            cout << "Invalid spot! Choose a number between 1 and 9!\n";
+            continue;
+        }
+
+        number--;
         if (spaces[number] == ' ')
         {
             spaces[number] = player;
@@ -55,7 +66,7 @@ void playerMove(char *spaces, char player)
             cout << "That spot is already occupied!\n";
         }
 
-    } while (number < 0 || number > 8);
+    } while (true);
 }
 
 void computerMove(char *spaces, char computer)
@@ -65,12 +76,9 @@ void computerMove(char *spaces, char computer)
     do
     {
         number = rand() % 9;
-        if (spaces[number] == ' ')
-        {
-            spaces[number] = computer;
-            break;
-        }
     } while (spaces[number] != ' ');
+
+    spaces[number] = computer;
 }
 
 void clearBoard(char *spaces) {
@@ -157,34 +165,30 @@ int main()
     char computer = 'O';
     bool running = true;
     char choice;
-   
-    drawBoard(spaces);
 
     while (running)
     {
-        playerMove(spaces, player);
-        clearScreen();
-        drawBoard(spaces);
-        if (checkWinner(spaces, player, computer) || checkTie(spaces))
-        {            
-            running = false;
+        clearBoard(spaces);
+        
+        while(true) {
+            playerMove(spaces, player);
+            clearScreen();
+            drawBoard(spaces);
+            if (checkWinner(spaces, player, computer) || checkTie(spaces))
+                break;
+
+            computerMove(spaces, computer);
+            clearScreen();
+            drawBoard(spaces);
+            if (checkWinner(spaces, player, computer) || checkTie(spaces))
+                break;
         }
 
-        computerMove(spaces, computer);
-        clearScreen();
-        drawBoard(spaces);
-        if (checkWinner(spaces, player, computer) || checkTie(spaces))
-        {
+        cout << "Do you wish to continue playing? (Y/N): ";
+        cin >> choice;
+        if(choice != 'Y' || choice != 'y') {
+            clearBoard(spaces);
             running = false;
-        }
-
-        if(!running) {
-            cout << "Do you wish to continue playing? (Y/N): ";
-            cin >> choice;
-            if(choice == 'Y' || choice == 'y') {
-                clearBoard(spaces);
-                running = true;
-            }
         }
     }
 
