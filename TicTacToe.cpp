@@ -1,5 +1,22 @@
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
+
+//This is a cross-platform function to clear the previous board as to not overwhelm the user with excess boards
+// and making it easier to keep track of the actual game
+// '#' is known a preprocessor directive which isn't actual c++ code, and is processed before the actual code
+// This block of code essentially checks if the code is being compiled on windows, is yes run "cls" command
+// else run "clear" command (used to clear the terminal on Linux and macOS)
+
+void clearScreen() {
+
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
 
 void drawBoard(char *spaces)
 {
@@ -38,13 +55,12 @@ void playerMove(char *spaces, char player)
             cout << "That spot is already occupied!\n";
         }
 
-    } while (!number > 0 || !number < 8);
+    } while (number < 0 || number > 8);
 }
 
 void computerMove(char *spaces, char computer)
 {
     int number;
-    srand(time(NULL));
 
     do
     {
@@ -57,9 +73,14 @@ void computerMove(char *spaces, char computer)
     } while (spaces[number] != ' ');
 }
 
+void clearBoard(char *spaces) {
+    clearScreen();
+    fill(spaces, spaces + 9, ' ');
+    drawBoard(spaces);
+}
+
 bool checkWinner(char *spaces, char player, char computer)
 {
-
     if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
     {
         spaces[0] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
@@ -105,7 +126,6 @@ bool checkWinner(char *spaces, char player, char computer)
 
 bool checkTie(char *spaces)
 {
-
     for (int i = 0; i < 9; i++)
     {
         if (spaces[i] == ' ')
@@ -120,6 +140,7 @@ bool checkTie(char *spaces)
 
 int main()
 {
+    srand(time(NULL));
 
     char spaces[9] = {
         ' ',
@@ -135,39 +156,40 @@ int main()
     char player = 'X';
     char computer = 'O';
     bool running = true;
-
+    char choice;
+   
     drawBoard(spaces);
 
     while (running)
     {
         playerMove(spaces, player);
+        clearScreen();
         drawBoard(spaces);
-        if (checkWinner(spaces, player, computer))
-        {
+        if (checkWinner(spaces, player, computer) || checkTie(spaces))
+        {            
             running = false;
-            break;
-        }
-        else if (checkTie(spaces))
-        {
-            running = false;
-            break;
         }
 
         computerMove(spaces, computer);
+        clearScreen();
         drawBoard(spaces);
-        if (checkWinner(spaces, player, computer))
+        if (checkWinner(spaces, player, computer) || checkTie(spaces))
         {
             running = false;
-            break;
         }
-        else if (checkTie(spaces))
-        {
-            running = false;
-            break;
+
+        if(!running) {
+            cout << "Do you wish to continue playing? (Y/N): ";
+            cin >> choice;
+            if(choice == 'Y' || choice == 'y') {
+                clearBoard(spaces);
+                running = true;
+            }
         }
     }
 
-    cout << "Thanks for playing!";
+    cout << "*******************\n";
+    cout << "Thanks for playing!\n";
 
     return 0;
 }
