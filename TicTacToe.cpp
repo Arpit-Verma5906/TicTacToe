@@ -73,6 +73,12 @@ void computerMove(char *spaces, char computer)
     } while (spaces[number] != ' ');
 }
 
+void clearBoard(char *spaces) {
+    clearScreen();
+    fill(spaces, spaces + 9, ' ');
+    drawBoard(spaces);
+}
+
 bool checkWinner(char *spaces, char player, char computer)
 {
     if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
@@ -150,6 +156,7 @@ int main()
     char player = 'X';
     char computer = 'O';
     bool running = true;
+    char choice;
    
     drawBoard(spaces);
 
@@ -161,7 +168,6 @@ int main()
         if (checkWinner(spaces, player, computer) || checkTie(spaces))
         {            
             running = false;
-            break;
         }
 
         computerMove(spaces, computer);
@@ -170,7 +176,15 @@ int main()
         if (checkWinner(spaces, player, computer) || checkTie(spaces))
         {
             running = false;
-            break;
+        }
+
+        if(!running) {
+            cout << "Do you wish to continue playing? (Y/N): ";
+            cin >> choice;
+            if(choice == 'Y' || choice == 'y') {
+                clearBoard(spaces);
+                running = true;
+            }
         }
     }
 
