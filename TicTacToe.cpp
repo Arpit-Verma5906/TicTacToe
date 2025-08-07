@@ -3,7 +3,14 @@
 #include <ctime>
 using namespace std;
 
+//This is a cross-platform function to clear the previous board as to not overwhelm the user with excess boards
+// and making it easier to keep track of the actual game
+// '#' is known a preprocessor directive which isn't actual c++ code, and is processed before the actual code
+// This block of code essentially checks if the code is being compiled on windows, is yes run "cls" command
+// else run "clear" command (used to clear the terminal on Linux and macOS)
+
 void clearScreen() {
+
 #ifdef _WIN32
     system("cls");
 #else
@@ -167,7 +174,8 @@ int main()
         }
     }
 
-    cout << "Thanks for playing!";
+    cout << "*******************\n";
+    cout << "Thanks for playing!\n";
 
     return 0;
 }
