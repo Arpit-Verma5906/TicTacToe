@@ -247,7 +247,6 @@ int main()
         cout << "Do you wish to continue playing? (Y/N): ";
         cin >> choice;
         if(choice != 'Y' && choice != 'y') {
-            clearBoard(spaces);
             running = false;
         }
     }
