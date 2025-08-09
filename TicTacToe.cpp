@@ -91,97 +91,79 @@ void score(int win, int tie, int loss) {
     cout << "Your current score is: " << win << " Wins, " << tie << " Ties and " << loss << " Losses!\n";
 }
 
-bool checkWinner(char *spaces, char player, char computer, int &win, int &loss)
+char checkWinner(char *spaces, char player, char computer)
 {
     if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
     {
         if(spaces[0] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
     else if (spaces[3] != ' ' && spaces[3] == spaces[4] && spaces[4] == spaces[5])
     {
         if(spaces[3] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
     else if (spaces[6] != ' ' && spaces[6] == spaces[7] && spaces[7] == spaces[8])
     {
         if(spaces[6] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
 
     else if (spaces[0] != ' ' && spaces[0] == spaces[3] && spaces[3] == spaces[6])
     {
         if(spaces[0] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
     else if (spaces[1] != ' ' && spaces[1] == spaces[4] && spaces[4] == spaces[7])
     {
         if(spaces[1] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
     else if (spaces[2] != ' ' && spaces[2] == spaces[5] && spaces[5] == spaces[8])
     {
         if(spaces[2] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
 
     else if (spaces[0] != ' ' && spaces[0] == spaces[4] && spaces[4] == spaces[8])
     {
         if(spaces[0] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
     else if (spaces[2] != ' ' && spaces[2] == spaces[4] && spaces[4] == spaces[6])
     {
         if(spaces[2] == player) {
-            win++;
-            cout << "YOU WIN!\n";
+            return 'P';
         } else {
-            loss++;
-            cout << "YOU LOSE!\n";
+            return 'C';
         }
     }
 
     else
     {
-        return false;
+        return ' ';
     }
-
-    return true;
 }
 
 bool checkTie(char *spaces, int &tie)
@@ -230,18 +212,18 @@ int main()
             playerMove(spaces, player);
             clearScreen();
             drawBoard(spaces);
-            if (checkWinner(spaces, player, computer, win, loss) || checkTie(spaces, tie)) {
-                score(win, tie, loss);
-                break;
-            }
+            char result = checkWinner(spaces, player, computer);
+                if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
 
             computerMove(spaces, computer);
             clearScreen();
             drawBoard(spaces);
-            if (checkWinner(spaces, player, computer, win, loss) || checkTie(spaces, tie)) {
-                score(win, tie, loss);
-                break;
-            };
+            result = checkWinner(spaces, player, computer);
+                if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
         }
 
         cout << "Do you wish to continue playing? (Y/N): ";
