@@ -207,23 +207,47 @@ int main()
     while (running)
     {
         clearBoard(spaces);
-        
-        while(true) {
-            playerMove(spaces, player);
-            clearScreen();
-            drawBoard(spaces);
-            char result = checkWinner(spaces, player, computer);
-                if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
-                if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
-                if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
 
-            computerMove(spaces, computer);
-            clearScreen();
-            drawBoard(spaces);
-            result = checkWinner(spaces, player, computer);
-                if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
-                if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
-                if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
+        int move1 = rand() % 2;
+
+        if(move1 == 0) {
+            move1 = rand() % 2;
+            while(true) {
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                char result = checkWinner(spaces, player, computer);
+                    if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                    if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                    if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
+
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                result = checkWinner(spaces, player, computer);
+                    if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                    if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                    if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
+            }
+        } else {
+            move1 = rand() % 2;
+            while(true) {
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                char result = checkWinner(spaces, player, computer);
+                    if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                    if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                    if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
+                
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                result = checkWinner(spaces, player, computer);
+                    if (result == 'P') { win++; cout << "YOU WIN!\n"; score(win, tie, loss); break; }
+                    if (result == 'C') { loss++; cout << "YOU LOSE!\n"; score(win, tie, loss); break; }
+                    if (checkTie(spaces, tie)) { score(win, tie, loss); break; }
+            }
         }
 
         cout << "Do you wish to continue playing? (Y/N): ";
