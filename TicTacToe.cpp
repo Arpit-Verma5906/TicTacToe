@@ -9,6 +9,98 @@ using namespace std;
 // This block of code essentially checks if the code is being compiled on windows, is yes run "cls" command
 // else run "clear" command (used to clear the terminal on Linux and macOS)
 
+void clearScreen();
+
+void drawBoard(char *spaces);
+
+void playerMove(char *spaces, char player);
+
+void computerMove(char *spaces, char computer);
+
+void clearBoard(char *spaces);
+
+void score(int win, int tie, int loss);
+
+char checkWinner(char *spaces, char player, char computer);
+
+bool checkTie(char *spaces, int &tie);
+
+bool handleResult(char *spaces, char player, char computer, int &win, int &tie, int &loss);
+
+int main()
+{
+    srand(time(NULL));
+
+    char spaces[9] = {
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+    };
+    char player;
+    char computer;
+    char choice;
+    bool running = true;
+    int win = 0;
+    int tie = 0;
+    int loss = 0;
+
+    cout << "Choose Your Marker (X/O): ";
+    cin >> player;
+    player = toupper(player);
+
+    player == 'X' ? computer = 'O' : computer = 'X';
+
+    while (running)
+    {
+        clearBoard(spaces);
+
+        int move1 = rand() % 2;
+
+        if(move1 == 0) {
+            while(true) {
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+            }
+        } else {
+            while(true) {
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+                
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+            }
+        }
+
+        cout << "Do you wish to continue playing? (Y/N): ";
+        cin >> choice;
+        if(choice != 'Y' && choice != 'y') {
+            running = false;
+        }
+    }
+
+    cout << "*******************\n";
+    cout << "Thanks for playing!\n";
+
+    return 0;
+}
+
 void clearScreen() {
 
 #ifdef _WIN32
@@ -34,6 +126,12 @@ void drawBoard(char *spaces)
     cout << "     |     |     " << '\n';
     cout << "  " << spaces[6] << "  |  " << spaces[7] << "  |  " << spaces[8] << "  " << '\n';
     cout << "     |     |     " << '\n';
+}
+
+void clearBoard(char *spaces) {
+    clearScreen();
+    fill(spaces, spaces + 9, ' ');
+    drawBoard(spaces);
 }
 
 void playerMove(char *spaces, char player)
@@ -79,24 +177,6 @@ void computerMove(char *spaces, char computer)
     } while (spaces[number] != ' ');
 
     spaces[number] = computer;
-}
-
-void clearBoard(char *spaces) {
-    clearScreen();
-    fill(spaces, spaces + 9, ' ');
-    drawBoard(spaces);
-}
-
-void score(int win, int tie, int loss) {
-    cout << "Your current score is: " << win << " Wins, " << tie << " Ties and " << loss << " Losses!\n";
-}
-
-bool handleResult(char *spaces, char player, char computer, int &win, int &tie, int &loss) {
-    char result = checkWinner(spaces, player, computer);
-        if(result == 'P') {win++; cout << "You Win!\n"; score(win, tie, loss); return true; }
-        if(result == 'C') {loss++; cout << "You Lose!\n"; score(win, tie, loss); return true; }
-        if(checkTie(spaces, tie)) {score(win, tie, loss); return true; }
-    return false;
 }
 
 char checkWinner(char *spaces, char player, char computer)
@@ -189,70 +269,14 @@ bool checkTie(char *spaces, int &tie)
     return true;
 }
 
-int main()
-{
-    srand(time(NULL));
+void score(int win, int tie, int loss) {
+    cout << "Your current score is: " << win << " Wins, " << tie << " Ties and " << loss << " Losses!\n";
+}
 
-    char spaces[9] = {
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-    };
-    char player = 'X';
-    char computer = 'O';
-    char choice;
-    bool running = true;
-    int win = 0;
-    int tie = 0;
-    int loss = 0;
-
-    while (running)
-    {
-        clearBoard(spaces);
-
-        int move1 = rand() % 2;
-
-        if(move1 == 0) {
-            while(true) {
-                playerMove(spaces, player);
-                clearScreen();
-                drawBoard(spaces);
-                if(handleResult(spaces, player, computer, win, tie, loss)) break;
-
-                computerMove(spaces, computer);
-                clearScreen();
-                drawBoard(spaces);
-                if(handleResult(spaces, player, computer, win, tie, loss)) break;
-            }
-        } else {
-            while(true) {
-                computerMove(spaces, computer);
-                clearScreen();
-                drawBoard(spaces);
-                if(handleResult(spaces, player, computer, win, tie, loss)) break;
-                
-                playerMove(spaces, player);
-                clearScreen();
-                drawBoard(spaces);
-                if(handleResult(spaces, player, computer, win, tie, loss)) break;
-            }
-        }
-
-        cout << "Do you wish to continue playing? (Y/N): ";
-        cin >> choice;
-        if(choice != 'Y' && choice != 'y') {
-            running = false;
-        }
-    }
-
-    cout << "*******************\n";
-    cout << "Thanks for playing!\n";
-
-    return 0;
+bool handleResult(char *spaces, char player, char computer, int &win, int &tie, int &loss) {
+    char result = checkWinner(spaces, player, computer);
+        if(result == 'P') {win++; cout << "You Win!\n"; score(win, tie, loss); return true; }
+        if(result == 'C') {loss++; cout << "You Lose!\n"; score(win, tie, loss); return true; }
+        if(checkTie(spaces, tie)) {score(win, tie, loss); return true; }
+    return false;
 }
