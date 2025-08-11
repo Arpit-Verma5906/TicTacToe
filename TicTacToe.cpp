@@ -9,6 +9,113 @@ using namespace std;
 // This block of code essentially checks if the code is being compiled on windows, is yes run "cls" command
 // else run "clear" command (used to clear the terminal on Linux and macOS)
 
+void clearScreen();
+
+void drawBoard(string *spaces);
+
+void playerMove(string *spaces, string player);
+
+void computerMove(string *spaces, string computer);
+
+void clearBoard(string *spaces);
+
+void score(int win, int tie, int loss);
+
+char checkWinner(string *spaces, string player, string computer);
+
+bool checkTie(string *spaces, int &tie);
+
+bool handleResult(string *spaces, string player, string computer, int &win, int &tie, int &loss);
+
+void highlightMarker(string *spaces, int a, int b, int c);
+
+void drawWinningBoard(string *spaces);
+
+int main()
+{
+    srand(time(NULL));
+
+    string spaces[9] = {
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+    };
+    string player;
+    string computer;
+    char choice;
+    bool running = true;
+    int win = 0;
+    int tie = 0;
+    int loss = 0;
+
+    cout << "Choose Your Marker (X/O): ";
+    cin >> player;
+
+    do {
+        if(player == "x" || player == "X") {
+            player = "X";
+        } else if(player == "o" || player == "O") {
+            player = "O";
+        } else {
+            player = " ";
+            cout << "Choose Your Marker Only From (X/O): ";
+            cin >> player;
+        }
+    } while (player != "X" && player != "O");
+
+    player == "X" ? computer = "O" : computer = "X";
+
+    while (running)
+    {
+        clearBoard(spaces);
+
+        int move1 = rand() % 2;
+
+        if(move1 == 0) {
+            while(true) {
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+            }
+        } else {
+            while(true) {
+                computerMove(spaces, computer);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+                
+                playerMove(spaces, player);
+                clearScreen();
+                drawBoard(spaces);
+                if(handleResult(spaces, player, computer, win, tie, loss)) break;
+            }
+        }
+
+        cout << "Do you wish to continue playing? (Y/N): ";
+        cin >> choice;
+        if(choice != 'Y' && choice != 'y') {
+            running = false;
+        }
+    }
+
+    cout << "*******************\n";
+    cout << "Thanks for playing!\n";
+
+    return 0;
+}
+
 void clearScreen() {
 
 #ifdef _WIN32
@@ -18,7 +125,7 @@ void clearScreen() {
 #endif
 }
 
-void drawBoard(char *spaces)
+void drawBoard(string *spaces)
 {
 
     cout << '\n';
@@ -36,16 +143,33 @@ void drawBoard(char *spaces)
     cout << "     |     |     " << '\n';
 }
 
-void playerMove(char *spaces, char player)
+void clearBoard(string *spaces) {
+    clearScreen();
+    fill(spaces, spaces + 9, " ");
+    drawBoard(spaces);
+}
+
+void playerMove(string *spaces, string player)
 {
     int number;
     do
     {
         cout << "Enter a spot to add a marker (1-9): ";
         cin >> number;
-        number--;
 
-        if (spaces[number] == ' ')
+        if(cin.fail()) {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            number = -1;
+        }
+
+        if(number < 1 || number > 9) {
+            cout << "Invalid spot! Choose a number between 1 and 9!\n";
+            continue;
+        }
+
+        number--;
+        if (spaces[number] == " ")
         {
             spaces[number] = player;
             break;
@@ -55,141 +179,165 @@ void playerMove(char *spaces, char player)
             cout << "That spot is already occupied!\n";
         }
 
-    } while (number < 0 || number > 8);
+    } while (true);
 }
 
-void computerMove(char *spaces, char computer)
+void computerMove(string *spaces, string computer)
 {
     int number;
 
     do
     {
         number = rand() % 9;
-        if (spaces[number] == ' ')
-        {
-            spaces[number] = computer;
-            break;
-        }
-    } while (spaces[number] != ' ');
+    } while (spaces[number] != " ");
+
+    spaces[number] = computer;
 }
 
-void clearBoard(char *spaces) {
-    clearScreen();
-    fill(spaces, spaces + 9, ' ');
-    drawBoard(spaces);
-}
-
-bool checkWinner(char *spaces, char player, char computer)
+char checkWinner(string *spaces, string player, string computer)
 {
-    if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
-    {
-        spaces[0] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+    if (spaces[0] != " " && spaces[0] == spaces[1] && spaces[1] == spaces[2])
+    {   
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 1, 2);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 1, 2);
+            return 'C';
+        }
     }
-    else if (spaces[3] != ' ' && spaces[3] == spaces[4] && spaces[4] == spaces[5])
+    else if (spaces[3] != " " && spaces[3] == spaces[4] && spaces[4] == spaces[5])
     {
-        spaces[3] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[3] == player) {
+            highlightMarker(spaces, 3, 4, 5);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 3, 4, 5);
+            return 'C';
+        }
     }
-    else if (spaces[6] != ' ' && spaces[6] == spaces[7] && spaces[7] == spaces[8])
+    else if (spaces[6] != " " && spaces[6] == spaces[7] && spaces[7] == spaces[8])
     {
-        spaces[6] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[6] == player) {
+            highlightMarker(spaces, 6, 7, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 6, 7, 8);
+            return 'C';
+        }
     }
 
-    else if (spaces[0] != ' ' && spaces[0] == spaces[3] && spaces[3] == spaces[6])
+    else if (spaces[0] != " " && spaces[0] == spaces[3] && spaces[3] == spaces[6])
     {
-        spaces[0] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 3, 6);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 3, 6);
+            return 'C';
+        }
     }
-    else if (spaces[1] != ' ' && spaces[1] == spaces[4] && spaces[4] == spaces[7])
+    else if (spaces[1] != " " && spaces[1] == spaces[4] && spaces[4] == spaces[7])
     {
-        spaces[1] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[1] == player) {
+            highlightMarker(spaces, 1, 4, 7);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 1, 4, 7);
+            return 'C';
+        }
     }
-    else if (spaces[2] != ' ' && spaces[2] == spaces[5] && spaces[5] == spaces[8])
+    else if (spaces[2] != " " && spaces[2] == spaces[5] && spaces[5] == spaces[8])
     {
-        spaces[2] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 5, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 2, 5, 8);
+            return 'C';
+        }
     }
 
-    else if (spaces[0] != ' ' && spaces[0] == spaces[4] && spaces[4] == spaces[8])
+    else if (spaces[0] != " " && spaces[0] == spaces[4] && spaces[4] == spaces[8])
     {
-        spaces[0] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 4, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 4, 8);
+            return 'C';
+        }
     }
-    else if (spaces[2] != ' ' && spaces[2] == spaces[4] && spaces[4] == spaces[6])
+    else if (spaces[2] != " " && spaces[2] == spaces[4] && spaces[4] == spaces[6])
     {
-        spaces[2] == player ? cout << "YOU WIN!\n" : cout << "YOU LOSE!\n";
+        if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 4, 6);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 2, 4, 6);
+            return 'C';
+        }
     }
 
     else
     {
-        return false;
+        return ' ';
     }
-
-    return true;
 }
 
-bool checkTie(char *spaces)
+bool checkTie(string *spaces, int &tie)
 {
     for (int i = 0; i < 9; i++)
     {
-        if (spaces[i] == ' ')
+        if (spaces[i] == " ")
         {
             return false;
         }
     }
 
+    tie++;
     cout << "IT'S A TIE!\n";
     return true;
 }
 
-int main()
-{
-    srand(time(NULL));
+void score(int win, int tie, int loss) {
+    cout << "Your current score is: " << win << " Wins, " << tie << " Ties and " << loss << " Losses!\n";
+}
 
-    char spaces[9] = {
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-    };
-    char player = 'X';
-    char computer = 'O';
-    bool running = true;
-    char choice;
-   
-    drawBoard(spaces);
+bool handleResult(string *spaces, string player, string computer, int &win, int &tie, int &loss) {
+    char result = checkWinner(spaces, player, computer);
+        if(result == 'P') {win++; cout << "You Win!\n"; score(win, tie, loss); return true; }
+        if(result == 'C') {loss++; cout << "You Lose!\n"; score(win, tie, loss); return true; }
+        if(checkTie(spaces, tie)) {score(win, tie, loss); return true; }
+    return false;
+}
 
-    while (running)
-    {
-        playerMove(spaces, player);
-        clearScreen();
-        drawBoard(spaces);
-        if (checkWinner(spaces, player, computer) || checkTie(spaces))
-        {            
-            running = false;
-        }
-
-        computerMove(spaces, computer);
-        clearScreen();
-        drawBoard(spaces);
-        if (checkWinner(spaces, player, computer) || checkTie(spaces))
-        {
-            running = false;
-        }
-
-        if(!running) {
-            cout << "Do you wish to continue playing? (Y/N): ";
-            cin >> choice;
-            if(choice == 'Y' || choice == 'y') {
-                clearBoard(spaces);
-                running = true;
-            }
+void highlightMarker(string *spaces, int a, int b, int c) {
+    for(int i = 0; i < 9; i++) {
+        if(i == a || i == b || i == c) {
+            spaces[i] = "[" + spaces[i] + "]";
+        } else {
+            spaces[i] = " " + spaces[i] + " ";
         }
     }
+    drawWinningBoard(spaces);
+}
 
-    cout << "*******************\n";
-    cout << "Thanks for playing!\n";
+void drawWinningBoard(string *spaces) {
 
-    return 0;
+    clearScreen();
+
+    cout << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[0] << " | " << spaces[1] << " | " << spaces[2] << " " << '\n';
+    cout << "_____|_____|_____" << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[3] << " | " << spaces[4] << " | " << spaces[5] << " " << '\n';
+    cout << "_____|_____|_____" << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[6] << " | " << spaces[7] << " | " << spaces[8] << " " << '\n';
+    cout << "     |     |     " << '\n';
 }
