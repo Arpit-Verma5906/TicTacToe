@@ -11,39 +11,43 @@ using namespace std;
 
 void clearScreen();
 
-void drawBoard(char *spaces);
+void drawBoard(string *spaces);
 
-void playerMove(char *spaces, char player);
+void playerMove(string *spaces, string player);
 
-void computerMove(char *spaces, char computer);
+void computerMove(string *spaces, string computer);
 
-void clearBoard(char *spaces);
+void clearBoard(string *spaces);
 
 void score(int win, int tie, int loss);
 
-char checkWinner(char *spaces, char player, char computer);
+char checkWinner(string *spaces, string player, string computer);
 
-bool checkTie(char *spaces, int &tie);
+bool checkTie(string *spaces, int &tie);
 
-bool handleResult(char *spaces, char player, char computer, int &win, int &tie, int &loss);
+bool handleResult(string *spaces, string player, string computer, int &win, int &tie, int &loss);
+
+void highlightMarker(string *spaces, int a, int b, int c);
+
+void drawWinningBoard(string *spaces);
 
 int main()
 {
     srand(time(NULL));
 
-    char spaces[9] = {
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
-        ' ',
+    string spaces[9] = {
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
+        " ",
     };
-    char player;
-    char computer;
+    string player;
+    string computer;
     char choice;
     bool running = true;
     int win = 0;
@@ -52,9 +56,20 @@ int main()
 
     cout << "Choose Your Marker (X/O): ";
     cin >> player;
-    player = toupper(player);
 
-    player == 'X' ? computer = 'O' : computer = 'X';
+    do {
+        if(player == "x" || player == "X") {
+            player = "X";
+        } else if(player == "o" || player == "O") {
+            player = "O";
+        } else {
+            player = " ";
+            cout << "Choose Your Marker Only From (X/O): ";
+            cin >> player;
+        }
+    } while (player != "X" && player != "O");
+
+    player == "X" ? computer = "O" : computer = "X";
 
     while (running)
     {
@@ -110,7 +125,7 @@ void clearScreen() {
 #endif
 }
 
-void drawBoard(char *spaces)
+void drawBoard(string *spaces)
 {
 
     cout << '\n';
@@ -128,13 +143,13 @@ void drawBoard(char *spaces)
     cout << "     |     |     " << '\n';
 }
 
-void clearBoard(char *spaces) {
+void clearBoard(string *spaces) {
     clearScreen();
-    fill(spaces, spaces + 9, ' ');
+    fill(spaces, spaces + 9, " ");
     drawBoard(spaces);
 }
 
-void playerMove(char *spaces, char player)
+void playerMove(string *spaces, string player)
 {
     int number;
     do
@@ -154,7 +169,7 @@ void playerMove(char *spaces, char player)
         }
 
         number--;
-        if (spaces[number] == ' ')
+        if (spaces[number] == " ")
         {
             spaces[number] = player;
             break;
@@ -167,83 +182,99 @@ void playerMove(char *spaces, char player)
     } while (true);
 }
 
-void computerMove(char *spaces, char computer)
+void computerMove(string *spaces, string computer)
 {
     int number;
 
     do
     {
         number = rand() % 9;
-    } while (spaces[number] != ' ');
+    } while (spaces[number] != " ");
 
     spaces[number] = computer;
 }
 
-char checkWinner(char *spaces, char player, char computer)
+char checkWinner(string *spaces, string player, string computer)
 {
-    if (spaces[0] != ' ' && spaces[0] == spaces[1] && spaces[1] == spaces[2])
-    {
+    if (spaces[0] != " " && spaces[0] == spaces[1] && spaces[1] == spaces[2])
+    {   
         if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 1, 2);
             return 'P';
         } else {
+            highlightMarker(spaces, 0, 1, 2);
             return 'C';
         }
     }
-    else if (spaces[3] != ' ' && spaces[3] == spaces[4] && spaces[4] == spaces[5])
+    else if (spaces[3] != " " && spaces[3] == spaces[4] && spaces[4] == spaces[5])
     {
         if(spaces[3] == player) {
+            highlightMarker(spaces, 3, 4, 5);
             return 'P';
         } else {
+            highlightMarker(spaces, 3, 4, 5);
             return 'C';
         }
     }
-    else if (spaces[6] != ' ' && spaces[6] == spaces[7] && spaces[7] == spaces[8])
+    else if (spaces[6] != " " && spaces[6] == spaces[7] && spaces[7] == spaces[8])
     {
         if(spaces[6] == player) {
+            highlightMarker(spaces, 6, 7, 8);
             return 'P';
         } else {
+            highlightMarker(spaces, 6, 7, 8);
             return 'C';
         }
     }
 
-    else if (spaces[0] != ' ' && spaces[0] == spaces[3] && spaces[3] == spaces[6])
+    else if (spaces[0] != " " && spaces[0] == spaces[3] && spaces[3] == spaces[6])
     {
         if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 3, 6);
             return 'P';
         } else {
+            highlightMarker(spaces, 0, 3, 6);
             return 'C';
         }
     }
-    else if (spaces[1] != ' ' && spaces[1] == spaces[4] && spaces[4] == spaces[7])
+    else if (spaces[1] != " " && spaces[1] == spaces[4] && spaces[4] == spaces[7])
     {
         if(spaces[1] == player) {
+            highlightMarker(spaces, 1, 4, 7);
             return 'P';
         } else {
+            highlightMarker(spaces, 1, 4, 7);
             return 'C';
         }
     }
-    else if (spaces[2] != ' ' && spaces[2] == spaces[5] && spaces[5] == spaces[8])
+    else if (spaces[2] != " " && spaces[2] == spaces[5] && spaces[5] == spaces[8])
     {
         if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 5, 8);
             return 'P';
         } else {
+            highlightMarker(spaces, 2, 5, 8);
             return 'C';
         }
     }
 
-    else if (spaces[0] != ' ' && spaces[0] == spaces[4] && spaces[4] == spaces[8])
+    else if (spaces[0] != " " && spaces[0] == spaces[4] && spaces[4] == spaces[8])
     {
         if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 4, 8);
             return 'P';
         } else {
+            highlightMarker(spaces, 0, 4, 8);
             return 'C';
         }
     }
-    else if (spaces[2] != ' ' && spaces[2] == spaces[4] && spaces[4] == spaces[6])
+    else if (spaces[2] != " " && spaces[2] == spaces[4] && spaces[4] == spaces[6])
     {
         if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 4, 6);
             return 'P';
         } else {
+            highlightMarker(spaces, 2, 4, 6);
             return 'C';
         }
     }
@@ -254,11 +285,11 @@ char checkWinner(char *spaces, char player, char computer)
     }
 }
 
-bool checkTie(char *spaces, int &tie)
+bool checkTie(string *spaces, int &tie)
 {
     for (int i = 0; i < 9; i++)
     {
-        if (spaces[i] == ' ')
+        if (spaces[i] == " ")
         {
             return false;
         }
@@ -273,10 +304,40 @@ void score(int win, int tie, int loss) {
     cout << "Your current score is: " << win << " Wins, " << tie << " Ties and " << loss << " Losses!\n";
 }
 
-bool handleResult(char *spaces, char player, char computer, int &win, int &tie, int &loss) {
+bool handleResult(string *spaces, string player, string computer, int &win, int &tie, int &loss) {
     char result = checkWinner(spaces, player, computer);
         if(result == 'P') {win++; cout << "You Win!\n"; score(win, tie, loss); return true; }
         if(result == 'C') {loss++; cout << "You Lose!\n"; score(win, tie, loss); return true; }
         if(checkTie(spaces, tie)) {score(win, tie, loss); return true; }
     return false;
+}
+
+void highlightMarker(string *spaces, int a, int b, int c) {
+    for(int i = 0; i < 9; i++) {
+        if(i == a || i == b || i == c) {
+            spaces[i] = "[" + spaces[i] + "]";
+        } else {
+            spaces[i] = " " + spaces[i] + " ";
+        }
+    }
+    drawWinningBoard(spaces);
+}
+
+void drawWinningBoard(string *spaces) {
+
+    clearScreen();
+
+    cout << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[0] << " | " << spaces[1] << " | " << spaces[2] << " " << '\n';
+    cout << "_____|_____|_____" << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[3] << " | " << spaces[4] << " | " << spaces[5] << " " << '\n';
+    cout << "_____|_____|_____" << '\n';
+
+    cout << "     |     |     " << '\n';
+    cout << " " << spaces[6] << " | " << spaces[7] << " | " << spaces[8] << " " << '\n';
+    cout << "     |     |     " << '\n';
 }
