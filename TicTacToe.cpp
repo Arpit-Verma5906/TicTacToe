@@ -65,12 +65,14 @@ int main()
     int cnt = 1;
 
     int gameMode;
+    do {
     cout << '\n';
     cout << "Select The Number Of Players:\n";
     cout << "1: Single Player\n";
     cout << "2: Multi-Player\n";
     cout << "Enter Your Choice: ";
     cin >> gameMode;
+    } while (gameMode != 1 && gameMode != 2);
 
     if(gameMode == 1) {
         cout << "Choose Your Marker (X/O): ";
