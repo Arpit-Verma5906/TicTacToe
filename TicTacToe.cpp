@@ -19,15 +19,17 @@ void playerMoveM(string *spaces, string player, int firstMove);
 
 void computerMoveEasy(string *spaces, string computer);
 
+void computerMoveHard(string *spaces, string computer, string player);
+
 void clearBoard(string *spaces);
 
 void score(int win, int tie, int loss);
 
 void scoreM(int win, int tie, int loss);
 
-char checkWinner(string *spaces, string player, string computer);
+char checkWinnerHard(string *spaces, string player, string computer);
 
-char checkWinnerM(string *spaces, string player, string player2);
+char checkWinner(string *spaces, string player, string computer);
 
 bool checkTie(string *spaces, int &tie);
 
@@ -66,26 +68,24 @@ int main()
 
     int gameMode;
     do {
-        cout << '\n';
-        cout << "Select The Number Of Players:\n";
-        cout << "1: Single Player\n";
-        cout << "2: Multi-Player\n";
-        cout << "Enter Your Choice: ";
-        cin >> gameMode;
+    cout << '\n';
+    cout << "Select The Number Of Players:\n";
+    cout << "1: Single Player\n";
+    cout << "2: Multi-Player\n";
+    cout << "Enter Your Choice: ";
+    cin >> gameMode;
     } while (gameMode != 1 && gameMode != 2);
 
     if(gameMode == 1) {
 
         int difficulty;
         do {
-            cout << '\n';
-            cout << "Select The Difficulty:\n";
-            cout << "1: Easy\n";
-            cout << "2: Hard\n";
-            cout << "3: Impossible\n";
-            cout << "Enter Your Choice: ";
+            cout << "\nSelect the difficulty:\n";
+            cout << "1: Easy Difficulty\n";
+            cout << "2: Hard Difficulty\n";
+            cout << "3: Impossible Difficulty\n";
             cin >> difficulty;
-        } while (difficulty != 1 && difficulty != 2);
+        } while (difficulty != 1 && difficulty != 2 && difficulty != 3);
 
         cout << "Choose Your Marker (X/O): ";
         cin >> player;
@@ -102,13 +102,18 @@ int main()
             }
         } while (player != "X" && player != "O");
 
-        player == "X" ? computer = "O" : computer = "X";
+        if(player == "X") {
+            computer = "O";
+        } else {
+            computer = "X";
+        }
 
         while (running)
         {
             
             clearScreen();
             clearBoard(spaces);
+            drawBoard(spaces);
 
             int firstMove = rand() % 2;
 
@@ -119,14 +124,26 @@ int main()
                     drawBoard(spaces);
                     if(handleResult(spaces, player, computer, win, tie, loss)) break;
 
-                    computerMoveEasy(spaces, computer);
+                    if(difficulty == 1) {
+                        computerMoveEasy(spaces, computer);
+                    } else if(difficulty == 2) {
+                        computerMoveHard(spaces, computer, player);
+                    } else {
+                        
+                    }
                     clearScreen();
                     drawBoard(spaces);
                     if(handleResult(spaces, player, computer, win, tie, loss)) break;
                 }
             } else {
                 while(true) {
-                    computerMoveEasy(spaces, computer);
+                    if(difficulty == 1) {
+                        computerMoveEasy(spaces, computer);
+                    } else if(difficulty == 2) {
+                        computerMoveHard(spaces, computer, player);
+                    } else {
+
+                    }
                     clearScreen();
                     drawBoard(spaces);
                     if(handleResult(spaces, player, computer, win, tie, loss)) break;
@@ -169,6 +186,7 @@ int main()
                 clearScreen();
             }
             clearBoard(spaces);
+            drawBoard(spaces);
 
             int firstMove = rand() % 2;
 
@@ -252,7 +270,6 @@ void drawBoard(string *spaces)
 
 void clearBoard(string *spaces) {
     fill(spaces, spaces + 9, " ");
-    drawBoard(spaces);
 }
 
 void playerMove(string *spaces, string player)
@@ -274,10 +291,10 @@ void playerMove(string *spaces, string player)
             continue;
         }
 
-        number--;
-        if (spaces[number] == " ")
+        int spaceIndex = number--;
+        if (spaces[spaceIndex] == " ")
         {
-            spaces[number] = player;
+            spaces[spaceIndex] = player;
             break;
         }
         else
@@ -337,23 +354,196 @@ void computerMoveEasy(string *spaces, string computer)
     spaces[number] = computer;
 }
 
-char checkWinner(string *spaces, string marker1, string marker2, char label1, char label2) {
-    int winPatterns[8][3] = {
-        {0,1,2}, {3,4,5}, {6,7,8},
-        {0,3,6}, {1,4,7}, {2,5,8},
-        {0,4,8}, {2,4,6}           
-    };
+void computerMoveHard(string *spaces, string computer, string player) {
 
-    for (auto &pattern : winPatterns) {
-        int a = pattern[0], b = pattern[1], c = pattern[2];
-        if (spaces[a] != " " && spaces[a] == spaces[b] && spaces[b] == spaces[c]) {
-            highlightMarker(spaces, a, b, c);
-            return (spaces[a] == marker1) ? label1 : label2;
+    for (int i = 0; i < 9; i++) {
+        if (spaces[i] == " ") {
+            spaces[i] = computer;
+            if (checkWinnerHard(spaces, player, computer) == 'C') {
+                return;
+            }
+            spaces[i] = " ";
         }
-
-        
     }
-    return ' ';
+
+    for(int i = 0; i < 9; i++) {
+        if(spaces[i] == " ") {
+            spaces[i] = player;
+            if(checkWinnerHard(spaces, player, computer) == 'P'){
+                spaces[i] = computer;
+                return;
+            }
+            spaces[i] = " ";
+        }
+    }
+
+    computerMoveEasy(spaces, computer);
+}
+
+char checkWinnerHard(string *spaces, string player, string computer)
+{
+    if (spaces[0] != " " && spaces[0] == spaces[1] && spaces[1] == spaces[2])
+    {   
+        if(spaces[0] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+    else if (spaces[3] != " " && spaces[3] == spaces[4] && spaces[4] == spaces[5])
+    {
+        if(spaces[3] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+    else if (spaces[6] != " " && spaces[6] == spaces[7] && spaces[7] == spaces[8])
+    {
+        if(spaces[6] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+
+    else if (spaces[0] != " " && spaces[0] == spaces[3] && spaces[3] == spaces[6])
+    {
+        if(spaces[0] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+    else if (spaces[1] != " " && spaces[1] == spaces[4] && spaces[4] == spaces[7])
+    {
+        if(spaces[1] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+    else if (spaces[2] != " " && spaces[2] == spaces[5] && spaces[5] == spaces[8])
+    {
+        if(spaces[2] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+
+    else if (spaces[0] != " " && spaces[0] == spaces[4] && spaces[4] == spaces[8])
+    {
+        if(spaces[0] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+    else if (spaces[2] != " " && spaces[2] == spaces[4] && spaces[4] == spaces[6])
+    {
+        if(spaces[2] == player) {
+            return 'P';
+        } else {
+            return 'C';
+        }
+    }
+
+    else
+    {
+        return ' ';
+    }
+}
+
+char checkWinner(string *spaces, string player, string computer)
+{
+    if (spaces[0] != " " && spaces[0] == spaces[1] && spaces[1] == spaces[2])
+    {   
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 1, 2);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 1, 2);
+            return 'C';
+        }
+    }
+    else if (spaces[3] != " " && spaces[3] == spaces[4] && spaces[4] == spaces[5])
+    {
+        if(spaces[3] == player) {
+            highlightMarker(spaces, 3, 4, 5);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 3, 4, 5);
+            return 'C';
+        }
+    }
+    else if (spaces[6] != " " && spaces[6] == spaces[7] && spaces[7] == spaces[8])
+    {
+        if(spaces[6] == player) {
+            highlightMarker(spaces, 6, 7, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 6, 7, 8);
+            return 'C';
+        }
+    }
+
+    else if (spaces[0] != " " && spaces[0] == spaces[3] && spaces[3] == spaces[6])
+    {
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 3, 6);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 3, 6);
+            return 'C';
+        }
+    }
+    else if (spaces[1] != " " && spaces[1] == spaces[4] && spaces[4] == spaces[7])
+    {
+        if(spaces[1] == player) {
+            highlightMarker(spaces, 1, 4, 7);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 1, 4, 7);
+            return 'C';
+        }
+    }
+    else if (spaces[2] != " " && spaces[2] == spaces[5] && spaces[5] == spaces[8])
+    {
+        if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 5, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 2, 5, 8);
+            return 'C';
+        }
+    }
+
+    else if (spaces[0] != " " && spaces[0] == spaces[4] && spaces[4] == spaces[8])
+    {
+        if(spaces[0] == player) {
+            highlightMarker(spaces, 0, 4, 8);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 0, 4, 8);
+            return 'C';
+        }
+    }
+    else if (spaces[2] != " " && spaces[2] == spaces[4] && spaces[4] == spaces[6])
+    {
+        if(spaces[2] == player) {
+            highlightMarker(spaces, 2, 4, 6);
+            return 'P';
+        } else {
+            highlightMarker(spaces, 2, 4, 6);
+            return 'C';
+        }
+    }
+
+    else
+    {
+        return ' ';
+    }
 }
 
 bool checkTie(string *spaces, int &tie)
@@ -380,7 +570,7 @@ void scoreM(int win, int tie, int loss) {
 }
 
 bool handleResult(string *spaces, string player, string computer, int &win, int &tie, int &loss) {
-    char result = checkWinner(spaces, player, computer, '1', '2');
+    char result = checkWinner(spaces, player, computer);
         if(result == 'P') {win++; cout << "You Win!\n"; score(win, tie, loss); return true; }
         if(result == 'C') {loss++; cout << "You Lose!\n"; score(win, tie, loss); return true; }
         if(checkTie(spaces, tie)) {score(win, tie, loss); return true; }
@@ -388,9 +578,9 @@ bool handleResult(string *spaces, string player, string computer, int &win, int 
 }
 
 bool handleResultM(string *spaces, string player, string player2, int &win, int &tie, int &loss) {
-    char result = checkWinner(spaces, player, player2, '1', '2');
-        if(result == '1') {win++; cout << "Player1 Wins The Match!\n"; scoreM(win, tie, loss); return true; }
-        if(result == '2') {loss++; cout << "Player2 Wins The Match!\n"; scoreM(win, tie, loss); return true; }
+    char result = checkWinner(spaces, player, player2);
+        if(result == 'P') {win++; cout << "Player1 Wins The Match!\n"; scoreM(win, tie, loss); return true; }
+        if(result == 'C') {loss++; cout << "Player2 Wins The Match!\n"; scoreM(win, tie, loss); return true; }
         if(checkTie(spaces, tie)) {scoreM(win, tie, loss); return true; }
     return false;
 }
@@ -404,6 +594,7 @@ void highlightMarker(string *spaces, int a, int b, int c) {
         }
     }
     drawWinningBoard(spaces);
+    clearBoard(spaces);
 }
 
 void drawWinningBoard(string *spaces) {
