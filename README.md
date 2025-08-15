@@ -12,13 +12,43 @@ A modular command-line Tic Tac Toe game implemented in C++.
 
 ## Project Structure
 
-The code is organized into several modules:
-- `board.h/cpp`: Game board management
-- `player.h/cpp`: Player class implementation
-- `computer.h/cpp`: Computer player AI
-- `display.h/cpp`: Game display functionality
-- `logic.h/cpp`: Game logic and win conditions
-- `TicTacToe.cpp`: Main game entry point
+The project follows a modular architecture organized into logical components:
+
+```
+TicTacToe/
+├── include/               # Header files
+│   ├── core/             # Core game mechanics
+│   │   ├── board.h       # Game board management
+│   │   └── logic.h       # Game rules and win conditions
+│   ├── players/          # Player-related components
+│   │   ├── player.h      # Base player class
+│   │   └── computer.h    # AI player implementation
+│   └── ui/               # User interface
+│       └── display.h     # Game display functionality
+├── src/                  # Source files
+│   ├── core/             # Core implementation
+│   ├── players/          # Player implementations
+│   ├── ui/               # UI implementation
+│   └── TicTacToe.cpp    # Main game entry point
+├── build/                # Build output directory
+└── CMakeLists.txt       # CMake build configuration
+```
+
+### Components
+
+1. **Core (core/)**
+   - Board management and game state
+   - Game logic and win condition checking
+
+2. **Players (players/)**
+   - Base player class implementation
+   - Computer AI player implementation
+   - Handles player moves and turns
+
+3. **User Interface (ui/)**
+   - Game board display
+   - User input handling
+   - Game state visualization
 
 ## Building and Running
 
